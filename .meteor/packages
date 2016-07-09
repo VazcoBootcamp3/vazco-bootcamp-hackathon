@@ -26,3 +26,4 @@ universe:collection
 mdg:validated-method
 mdg:validation-error
 practicalmeteor:mocha
+ultimatejs:tracker-react

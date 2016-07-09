@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react'
+import { withRouter } from 'react-router'
 
+@withRouter
 export default class AttendEventForm extends Component {
   state = {
     name: '',
@@ -8,8 +10,14 @@ export default class AttendEventForm extends Component {
   handleSubmit = (ev) => {
     ev.preventDefault()
 
-    console.log(this.state.name)
-    console.log(this.props.eventId)
+    Meteor.call('event.join', {eventId: this.props.event._id, userId: this.state.name}, (err, res) => {
+      if (err) {
+        Materialize.toast(err.reason, 4000);
+      } else {
+        alert('ATTENDING!')
+        this.props.router.push('/admin/events/new')
+      }
+    });
   }
 
   handleNameChange = (ev) => {

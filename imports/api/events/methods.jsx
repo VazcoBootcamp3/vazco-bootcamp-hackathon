@@ -11,7 +11,7 @@ export const eventCreate = new ValidatedMethod({
     }).validator(),
     run({ name, owner, date, place, description }) {
         const users = [ owner ];
-        EventsList.insert({
+        return EventsList.insert({
             name: name,
             owner: owner,
             date: date,

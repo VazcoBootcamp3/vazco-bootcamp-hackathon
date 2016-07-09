@@ -9,7 +9,6 @@ const indexRedirect = (_, replace) => {
   replace('/admin/events/new')
 }
 
-
 export default {
   path: '/',
   component: App,

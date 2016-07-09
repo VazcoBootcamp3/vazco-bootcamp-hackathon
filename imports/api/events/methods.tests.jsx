@@ -27,6 +27,15 @@ if(Meteor.isServer) {
             createEvent.apply(this, [ event ]);
 
             assert.equal(EventList.find({}).count(), 1);
+
+            const createdEvent = EventList.findOne();
+            assert.equal(createdEvent.name, event.name);
+            assert.equal(createdEvent.owner, event.owner);
+            assert.equal(createdEvent.date.getTime(), event.date.getTime());
+            assert.equal(createdEvent.place, event.place);
+            assert.equal(createdEvent.description, event.description);
+            assert.includeMembers(createdEvent.users, [event.owner]);
+
         });
     });
 
@@ -61,6 +70,7 @@ if(Meteor.isServer) {
             event.refresh();
             users = event.users;
             assert.equal(users.length, 2);
+            assert.includeMembers(users, [newUser, newEvent.owner]);
         });
     });
 }

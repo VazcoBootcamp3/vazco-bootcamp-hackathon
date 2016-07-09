@@ -1,19 +1,27 @@
 import React, { Component, PropTypes } from 'react'
 import { withRouter } from 'react-router'
 
+
 @withRouter
 export default class NewEventForm extends Component {
   state = {
     name: '',
-    organizer: '',
+    owner: '',
     date: '',
-    location: '',
+    place: '',
     description: '',
   }
 
   handleSubmit = (ev) => {
-    ev.preventDefault()
-    this.props.router.push('/admin/events/eventId')
+    ev.preventDefault();
+
+    Meteor.call('event.create', this.state, (err, res) => {
+      if (err) {
+        Materialize.toast(err.reason, 4000);
+      } else {
+        this.props.router.push('/admin/events/eventId')
+      }
+    });
   }
 
   componentDidMount() {
@@ -21,7 +29,7 @@ export default class NewEventForm extends Component {
     const picker = $(input).pickadate('picker')
 
     picker.on({
-      set: ev => { this.setState({ date: ev.select }) },
+      set: ev => { this.setState({ date: new Date(ev.select) }) },
     })
   }
 
@@ -42,8 +50,8 @@ export default class NewEventForm extends Component {
           </div>
           <div className="row">
             <div className="input-field col s6">
-              <label htmlFor="organizer">Event creator</label>
-              <input id='organizer' type="text" value={this.state.organizer} onChange={this.handleInputChange} />
+              <label htmlFor="owner">Event creator</label>
+              <input id='owner' type="text" value={this.state.owner} onChange={this.handleInputChange} />
             </div>
           </div>
           <div className="row">
@@ -54,8 +62,8 @@ export default class NewEventForm extends Component {
           </div>
           <div className="row">
             <div className="input-field col s6">
-              <label htmlFor="location">Event location</label>
-              <input id="location" type="text" value={this.state.location} onChange={this.handleInputChange} />
+              <label htmlFor="place">Event location</label>
+              <input id="place" type="text" value={this.state.place} onChange={this.handleInputChange} />
             </div>
           </div>
           <div className="row">

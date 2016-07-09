@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
-import { Meteor } from 'meteor/meteor'
-import _ from 'lodash'
+import { withRouter } from 'react-router'
 
+@withRouter
 export default class NewEventForm extends Component {
   state = {
     name: '',
@@ -14,7 +14,7 @@ export default class NewEventForm extends Component {
   handleSubmit = (ev) => {
     ev.preventDefault()
 
-    console.log('test')
+    this.props.router.push('/admin/events/eventId')
   }
 
   // handleInputChange = (ev) => {

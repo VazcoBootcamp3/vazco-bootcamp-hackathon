@@ -72,5 +72,71 @@ if(Meteor.isServer) {
             assert.equal(users.length, 2);
             assert.includeMembers(users, [newUser, newEvent.owner]);
         });
+
+        it('should add users', () => {
+            const createEvent = Meteor.server.method_handlers['event.create'];
+            const newEvent = {
+                name: 'Test',
+                owner: 'Janusz',
+                date: new Date(),
+                place: 'Biegun',
+                description: 'Lorem ipsum...',
+            };
+
+            createEvent.apply(this, [ newEvent ]);
+
+            const eventJoin = Meteor.server.method_handlers['event.join'];
+            const event = EventList.findOne({name: newEvent.name});
+
+            let users = event.users;
+            assert.equal(users.length, 1);
+            const newUsers = ['Zbyszek', 'Mietek', 'Janek'];
+            for(const user of newUsers) {
+                eventJoin.apply(this, [{
+                    eventId: event._id,
+                    userId: user,
+                }]);
+            }
+
+            event.refresh();
+            users = event.users;
+            assert.equal(users.length, 4);
+            assert.includeMembers(users, newUsers);
+            assert.includeMembers(users, [newEvent.owner]);
+        });
+
+        it('users should be unique', () => {
+            const createEvent = Meteor.server.method_handlers['event.create'];
+            const eventJoin = Meteor.server.method_handlers['event.join'];
+
+            const newEvent = {
+                name: 'Test',
+                owner: 'Janusz',
+                date: new Date(),
+                place: 'Biegun',
+                description: 'Lorem ipsum...',
+            };
+
+            createEvent.apply(this, [ newEvent ]);
+            const event = EventList.findOne({name: newEvent.name});
+            let users = event.users;
+            assert.equal(users.length, 1);
+
+            eventJoin.apply(this, [{eventId: event._id, userId: newEvent.owner}]);
+            event.refresh();
+            users = event.users;
+            assert.equal(users.length, 1);
+            assert.includeMembers(users, [newEvent.owner]);
+
+            const secondUser = 'Mietek';
+            eventJoin.apply(this, [{eventId: event._id, userId: secondUser}]);
+            eventJoin.apply(this, [{eventId: event._id, userId: secondUser}]);
+            event.refresh();
+            users = event.users;
+            assert.equal(users.length, 2);
+            assert.includeMembers(users, [newEvent.owner, secondUser]);
+
+        });
+
     });
 }
